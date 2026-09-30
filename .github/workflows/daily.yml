@@ -1,0 +1,35 @@
+# Runs in GitHub's cloud every day, so your laptop can stay off. 07:00 UTC = 15:00 Singapore;
+# the bot stops by run.stop_by (18:30) so the workbook is ready before 19:00.
+# GitHub emails you if a run fails. Run it by hand any time: Actions tab > Daily sourcing > Run workflow.
+name: Daily sourcing
+on:
+  schedule:
+    - cron: '0 7 * * *'
+  workflow_dispatch:
+concurrency: { group: sourcing, cancel-in-progress: false }
+permissions: { contents: write }
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with: { node-version: 24, cache: npm }
+      - run: npm ci
+      - run: npm test
+      - run: node src/run.js
+        env:
+          AE_APP_KEY: ${{ secrets.AE_APP_KEY }}
+          AE_APP_SECRET: ${{ secrets.AE_APP_SECRET }}
+          AE_TRACKING_ID: ${{ secrets.AE_TRACKING_ID }}
+          AE_ACCESS_TOKEN: ${{ secrets.AE_ACCESS_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      - name: Save workbook and state
+        if: always()
+        run: |
+          git config user.name "vourelle-bot"
+          git config user.email "vourelle-bot@users.noreply.github.com"
+          git add state output
+          git commit -q -m "Daily run $(date -u +%F)" || exit 0
+          git pull -q --rebase && git push -q

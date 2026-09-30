@@ -1,0 +1,20 @@
+{
+  "name": "vourelle-sourcing-bot",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "run": "node src/run.js",
+    "import": "node src/import.js",
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "0.129.0",
+    "@lofder/dsers-mcp-product": "1.5.9",
+    "@modelcontextprotocol/sdk": "1.26.0",
+    "exceljs": "4.4.0",
+    "js-yaml": "4.3.2"
+  }
+}

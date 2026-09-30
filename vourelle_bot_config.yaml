@@ -1,0 +1,100 @@
+# VOURELLE sourcing bot - configuration (v2026-09-30)
+# Master spec: Vourelle_Sourcing_Bot_Spec.pdf. Every threshold below is a config value, never a hard-coded constant.
+version: "2026-09-30"
+
+economics:                      # pricing formula in spec section 2
+  target_roas: 2.0              # Google Ads, conversion value = revenue excl. tax and shipping
+  refund_rate: 0.12             # share of gross sales refunded; replace with actuals monthly
+  payment_fee_rate: 0.035
+  payment_fee_fixed_usd: 0.30
+  overhead_rate: 0.06
+  target_net_margin: 0.10       # of net sales (gross minus refunds)
+  price_ending_digit: 8         # 48, 58, 68 ... 248
+
+markets:
+  US: {iso: US, currency: USD, fx_per_usd: 1.00, sample_postcode: "10001",
+       duty_rate: {garment: 0.45, footwear: 0.50, bag_belt_hat: 0.40, jewelry: 0.35}}
+  UK: {iso: GB, currency: GBP, fx_per_usd: 0.74, sample_postcode: "SW1A 1AA",
+       vat_rate: 0.20, prices_include_vat: true, duty_rate: 0.00, duty_relief_review_date: "2028-10-01"}
+  CA: {iso: CA, currency: CAD, fx_per_usd: 1.40, sample_postcode: "M5V 2T6",
+       duty_rate: {garment: 0.18, other: 0.10}, duty_verified: false}   # confirm on a real checkout before launch
+
+shipping:
+  required_countries: [US, GB, CA]   # must pass all three
+  max_delivery_days: 9               # "less than 10 days": processing + transit, upper bound of estimate
+  max_ship_cost_usd: 4.99            # cheapest qualifying tracked method, per unit, each country
+  require_tracking: true
+  reject_if_ship_cost_gt_item_price: true
+  check_sku: heaviest                # run freight for the heaviest/largest SKU you will list
+  freight_outlier_usd: 3.00          # F-11: one country this much dearer than the cheapest country
+
+supplier_gates:
+  standard: {min_orders: 500,  min_reviews: 100, min_rating: 4.6, min_photo_reviews: 10}
+  hero:     {min_orders: 1000, min_reviews: 300, min_rating: 4.7, min_photo_reviews: 25}
+  addon:    {min_orders: 300,  min_reviews: 50,  min_rating: 4.6, min_photo_reviews: 5}
+  store_min_dsr: 4.6                 # item-as-described, communication, shipping-speed ratings
+  store_min_positive_feedback: 0.95
+  store_min_age_years: 1
+
+variants:
+  apparel:  {min_colours: 3, min_palette_colours: 2, required_sizes: [S, M, L, XL],
+             preferred_sizes: [XS, XXL], min_skus: 12, max_variant_price_spread: 0.15}
+  one_size: {min_colours: 2, min_palette_colours: 1}
+
+inventory:
+  apparel:  {min_total_stock: 1000, min_stock_per_core_size: 100}   # core sizes S, M, L in each listed colour
+  one_size: {min_total_stock: 500}
+  placeholder_stock_values: [999, 9999, 99999, 999999]
+
+quality:
+  min_images: 5
+  min_premium_look_score: 4          # 1-5, vision model rubric in spec section 3.5
+  vision_images_checked: 6
+
+palette: [camel, oatmeal, cream, ivory, white, stone, beige, tan, cognac, chestnut, brown, chocolate,
+          navy, charcoal, grey, black, burgundy, wine, bottle green, hunter green, emerald, olive,
+          champagne, pale blue, blue white stripe, gold, pearl]
+
+blocklist_terms: [burberry, nova check, hermes, kelly, birkin, constance, chanel, coco, gucci, horsebit,
+                  louis vuitton, monogram, dior, prada, miu miu, celine, loewe, bottega, intrecciato,
+                  loro piana, max mara, ralph lauren, barbour, moncler, canada goose, ugg, toteme,
+                  the row, reformation, sezane, zara, mango, aritzia, skims, real fur, mink, fox fur,
+                  rabbit fur, raccoon fur]
+blocklist_whitelist_phrases: [hunter green, knit polo, polo collar, polo neck]
+
+scoring:
+  weights: {margin_headroom: 20, social_proof: 20, sales_velocity: 15, premium_look: 20,
+            delivery_speed: 10, variants_palette: 10, shipping_cost: 5}
+  approve_min_score: 70
+  review_min_score: 55
+
+throughput:
+  discovery_interval_hours: 6
+  monitor_interval_hours: 12
+  max_new_approved_per_day: 50       # founder instruction 2026-09-30 (spec said 10): 50 products into the workbook per day
+  max_per_category_per_day: 6        # raised with the daily cap so 50 fits across 14 categories (spec said 3)
+  max_per_subcategory_per_day: 3
+  max_live_per_subcategory: 3        # spec 4: keep at most 3 live products per subcategory
+  backups_per_product: 2
+
+monitoring:
+  core_size_stock_floor: 20
+  total_stock_floor: 200
+  supplier_price_change_trigger: 0.05
+
+output:
+  excel_dir: ./output
+  daily_file: vourelle_candidates_{date}.xlsx
+  master_file: vourelle_master.xlsx
+  keep_rejected_days: 30
+
+run:                                 # founder instructions 2026-09-30
+  timezone: Asia/Singapore           # the day ends at 23:59 in this zone; the daily cap resets at midnight
+  stop_by: "18:30"                   # stop searching so the workbook is ready before 19:00
+  max_runtime_minutes: 210           # used instead of stop_by when a run is started after stop_by
+  pages_per_keyword: 3
+  page_size: 50
+  candidates_per_subcategory: 6      # stop searching a subcategory once this many pass; best 3 are kept
+  recheck_rejected_after_days: 7
+  max_error_rate: 0.05               # run is marked failed above this (GitHub emails you)
+  vision_model: claude-opus-5-5      # premium-look check; set to claude-haiku-4-5 to cut cost

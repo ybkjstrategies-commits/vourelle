@@ -1,0 +1,104 @@
+category,subcategory,aliexpress_keywords,role,enabled,price_band_min_usd,price_band_max_usd,landed_cap_at_band_max_usd,shipping_risk,google_product_category
+Coats,Belted camel wrap coat,women camel belted wrap coat long,Hero,True,178,248,48,High,Apparel & Accessories > Clothing > Outerwear > Coats & Jackets
+Coats,Double-breasted long coat,women double breasted long coat,Core,True,178,248,48,High,Apparel & Accessories > Clothing > Outerwear > Coats & Jackets
+Coats,Long faux fur coat,women faux fur long coat,Core,True,198,268,52,High,Apparel & Accessories > Clothing > Outerwear > Coats & Jackets
+Coats,Cape coat,women cape coat,Core,True,158,218,42,High,Apparel & Accessories > Clothing > Outerwear > Coats & Jackets
+Coats,Faux-fur-collar coat,women coat faux fur collar,Core,True,178,248,48,High,Apparel & Accessories > Clothing > Outerwear > Coats & Jackets
+Coats,Funnel-neck coat,women funnel neck coat,Core,True,178,238,46,High,Apparel & Accessories > Clothing > Outerwear > Coats & Jackets
+Coats,Toggle duffle coat,women toggle duffle coat hooded,Core,True,158,218,42,High,Apparel & Accessories > Clothing > Outerwear > Coats & Jackets
+Coats,Long matte down coat,women long matte down coat hooded,Core,True,188,258,50,High,Apparel & Accessories > Clothing > Outerwear > Coats & Jackets
+Coats,Cocoon coat,women cocoon coat,Core,True,168,228,44,High,Apparel & Accessories > Clothing > Outerwear > Coats & Jackets
+Coats,Lined trench coat,women long trench coat lined,Core,True,148,198,38,High,Apparel & Accessories > Clothing > Outerwear > Coats & Jackets
+Jackets & Gilets,"Barn jacket, corduroy collar",women barn jacket corduroy collar,Hero,True,118,168,32,Medium,Apparel & Accessories > Clothing > Outerwear > Coats & Jackets
+Jackets & Gilets,Diamond-quilted jacket,women diamond quilted jacket corduroy collar,Core,True,108,148,28,Medium,Apparel & Accessories > Clothing > Outerwear > Coats & Jackets
+Jackets & Gilets,Quilted gilet,women quilted gilet vest,Core,True,68,98,19,Medium,Apparel & Accessories > Clothing > Outerwear > Vests
+Jackets & Gilets,Faux leather bomber,women faux leather bomber jacket,Core,True,108,148,28,Medium,Apparel & Accessories > Clothing > Outerwear > Coats & Jackets
+Jackets & Gilets,Faux shearling jacket,women faux shearling aviator jacket,Core,True,128,178,34,Medium,Apparel & Accessories > Clothing > Outerwear > Coats & Jackets
+Jackets & Gilets,Faux suede jacket,women faux suede jacket,Core,True,118,158,30,Medium,Apparel & Accessories > Clothing > Outerwear > Coats & Jackets
+Sweaters,Chunky cable crewneck,women cable knit sweater crew neck,Hero,True,58,88,17,Low,Apparel & Accessories > Clothing > Shirts & Tops
+Sweaters,Fine-rib turtleneck,women ribbed turtleneck sweater slim,Hero,True,48,68,13,Low,Apparel & Accessories > Clothing > Shirts & Tops
+Sweaters,Cashmere-blend crewneck,women cashmere blend crew neck sweater,Core,True,68,98,19,Low,Apparel & Accessories > Clothing > Shirts & Tops
+Sweaters,Fair Isle yoke sweater,women fair isle sweater,Core,True,68,98,19,Low,Apparel & Accessories > Clothing > Shirts & Tops
+Sweaters,Half-zip knit,women half zip knit sweater,Core,True,58,88,17,Low,Apparel & Accessories > Clothing > Shirts & Tops
+Sweaters,Striped boat-neck knit,women striped boat neck sweater,Core,True,58,78,15,Low,Apparel & Accessories > Clothing > Shirts & Tops
+Sweaters,Funnel-neck sweater,women funnel neck sweater,Core,True,58,88,17,Low,Apparel & Accessories > Clothing > Shirts & Tops
+Sweaters,Cricket V-neck,women cricket sweater v neck,Core,True,58,88,17,Low,Apparel & Accessories > Clothing > Shirts & Tops
+Sweaters,Sweater vest,women knit sweater vest v neck,Core,True,48,68,13,Low,Apparel & Accessories > Clothing > Shirts & Tops
+Sweaters,Asymmetric one-shoulder knit,women asymmetric one shoulder knit sweater,Core,True,58,78,15,Low,Apparel & Accessories > Clothing > Shirts & Tops
+Cardigans,"Cable cardigan, gold buttons",women cable knit cardigan gold buttons,Hero,True,68,98,19,Low,Apparel & Accessories > Clothing > Shirts & Tops
+Cardigans,Fine-knit crew cardigan,women crew neck fine knit cardigan,Core,True,58,78,15,Low,Apparel & Accessories > Clothing > Shirts & Tops
+Cardigans,Pearl-button V-neck cardigan,women v neck cardigan pearl buttons,Core,True,58,78,15,Low,Apparel & Accessories > Clothing > Shirts & Tops
+Cardigans,Long belted wrap cardigan,women long belted wrap cardigan,Core,True,78,108,20,Low,Apparel & Accessories > Clothing > Shirts & Tops
+Cardigans,Shawl-collar chunky cardigan,women shawl collar chunky cardigan,Core,True,78,108,20,Low,Apparel & Accessories > Clothing > Shirts & Tops
+Knit Sets,Sweater + wide-leg trouser set,women knit two piece set wide leg pants,Core,True,108,148,28,Medium,Apparel & Accessories > Clothing > Outfit Sets
+Knit Sets,Sweater + midi skirt set,women knit sweater midi skirt set,Core,True,108,148,28,Medium,Apparel & Accessories > Clothing > Outfit Sets
+Knit Sets,Ribbed cardigan + trouser set,women ribbed knit lounge set cardigan,Core,True,88,128,24,Medium,Apparel & Accessories > Clothing > Outfit Sets
+Blazers & Tailoring,"Double-breasted blazer, gold buttons",women double breasted blazer gold buttons,Hero,True,108,148,28,Medium,Apparel & Accessories > Clothing > Outerwear > Coats & Jackets
+Blazers & Tailoring,Houndstooth or tweed blazer,women houndstooth blazer,Core,True,108,148,28,Medium,Apparel & Accessories > Clothing > Outerwear > Coats & Jackets
+Blazers & Tailoring,Velvet blazer,women velvet blazer,Core,True,118,158,30,Medium,Apparel & Accessories > Clothing > Outerwear > Coats & Jackets
+Blazers & Tailoring,Trouser suit,women suit set blazer trousers,Core,True,158,218,42,Medium,Apparel & Accessories > Clothing > Suits > Pant Suits
+Blazers & Tailoring,"Tuxedo blazer, satin lapel",women tuxedo blazer satin lapel,Core,True,118,158,30,Medium,Apparel & Accessories > Clothing > Outerwear > Coats & Jackets
+Blazers & Tailoring,Skirt suit,women blazer skirt suit set,Core,True,148,198,38,Medium,Apparel & Accessories > Clothing > Suits > Skirt Suits
+Blazers & Tailoring,Tailored waistcoat,women tailored waistcoat,Core,True,58,78,15,Medium,Apparel & Accessories > Clothing > Outerwear > Vests
+Tops & Shirts,Oxford shirt,women classic oxford shirt,Core,True,48,68,13,Low,Apparel & Accessories > Clothing > Shirts & Tops
+Tops & Shirts,Satin shirt,women satin button shirt,Core,True,58,78,15,Low,Apparel & Accessories > Clothing > Shirts & Tops
+Tops & Shirts,Bow-neck blouse,women bow tie neck blouse,Core,True,58,78,15,Low,Apparel & Accessories > Clothing > Shirts & Tops
+Tops & Shirts,Fitted turtleneck top,women slim turtleneck long sleeve top,Core,True,28,48,9,Low,Apparel & Accessories > Clothing > Shirts & Tops
+Tops & Shirts,Striped poplin shirt,women striped poplin shirt,Core,True,48,68,13,Low,Apparel & Accessories > Clothing > Shirts & Tops
+Tops & Shirts,Ruffle high-neck blouse,women ruffle high neck victorian blouse,Core,True,58,78,15,Low,Apparel & Accessories > Clothing > Shirts & Tops
+Tops & Shirts,Long-sleeve knit polo,women long sleeve knit polo,Core,True,48,68,13,Low,Apparel & Accessories > Clothing > Shirts & Tops
+Tops & Shirts,Square-neck bodysuit,women long sleeve square neck bodysuit,Core,True,28,48,9,Low,Apparel & Accessories > Clothing > Shirts & Tops
+Trousers,Pleated wide-leg trousers,women high waist wide leg pleated trousers,Hero,True,68,98,19,Low,Apparel & Accessories > Clothing > Pants
+Trousers,Straight flannel trousers,women grey flannel straight trousers,Core,True,68,98,19,Low,Apparel & Accessories > Clothing > Pants
+Trousers,Corduroy wide-leg trousers,women corduroy wide leg pants high waist,Core,True,58,88,17,Low,Apparel & Accessories > Clothing > Pants
+Trousers,Velvet wide-leg trousers,women velvet wide leg trousers,Core,True,68,98,19,Low,Apparel & Accessories > Clothing > Pants
+Trousers,Dark straight jeans,women high waist straight jeans dark wash,Core,True,58,88,17,Low,Apparel & Accessories > Clothing > Pants
+Trousers,Riding-style trousers,women equestrian riding pants,Core,True,68,98,19,Low,Apparel & Accessories > Clothing > Pants
+Trousers,Houndstooth trousers,women houndstooth trousers,Core,True,68,98,19,Low,Apparel & Accessories > Clothing > Pants
+Trousers,Knit wide-leg trousers,women knit wide leg pants,Core,True,58,78,15,Low,Apparel & Accessories > Clothing > Pants
+Skirts,Pleated midi skirt,women pleated midi skirt,Core,True,58,88,17,Low,Apparel & Accessories > Clothing > Skirts
+Skirts,Tartan midi skirt,women plaid midi skirt,Core,True,58,88,17,Low,Apparel & Accessories > Clothing > Skirts
+Skirts,A-line midi skirt,women a line midi skirt winter,Core,True,58,88,17,Low,Apparel & Accessories > Clothing > Skirts
+Skirts,Satin slip midi,women satin midi slip skirt,Core,True,48,68,13,Low,Apparel & Accessories > Clothing > Skirts
+Skirts,Faux suede midi,women faux suede midi skirt,Core,True,58,88,17,Low,Apparel & Accessories > Clothing > Skirts
+Skirts,Velvet midi,women velvet midi skirt,Core,True,58,88,17,Low,Apparel & Accessories > Clothing > Skirts
+Skirts,Ribbed knit midi,women ribbed knit midi skirt,Core,True,48,68,13,Low,Apparel & Accessories > Clothing > Skirts
+Dresses,Ribbed knit midi dress,women ribbed knit midi dress long sleeve,Hero,True,68,98,19,Low,Apparel & Accessories > Clothing > Dresses
+Dresses,Long-sleeve velvet midi,women velvet midi dress long sleeve,Hero,True,88,128,24,Low,Apparel & Accessories > Clothing > Dresses
+Dresses,Turtleneck sweater dress,women turtleneck sweater dress midi,Core,True,78,108,20,Low,Apparel & Accessories > Clothing > Dresses
+Dresses,Long-sleeve wrap dress,women long sleeve wrap midi dress,Core,True,68,98,19,Low,Apparel & Accessories > Clothing > Dresses
+Dresses,Satin slip dress,women satin slip midi dress,Core,True,68,98,19,Low,Apparel & Accessories > Clothing > Dresses
+Dresses,Off-shoulder velvet dress,women off shoulder velvet midi dress,Core,True,88,128,24,Low,Apparel & Accessories > Clothing > Dresses
+Dresses,Belted shirt dress,women belted shirt dress midi,Core,True,68,98,19,Low,Apparel & Accessories > Clothing > Dresses
+Dresses,Pinafore dress,women pinafore dress winter,Core,True,78,108,20,Low,Apparel & Accessories > Clothing > Dresses
+Scarves & Gloves,Oversized scarf,women oversized scarf solid winter,Add-on,True,38,58,11,Low,Apparel & Accessories > Clothing Accessories > Scarves & Shawls
+Scarves & Gloves,Soft-handle solid scarf,women solid soft scarf,Add-on,True,28,48,9,Low,Apparel & Accessories > Clothing Accessories > Scarves & Shawls
+Scarves & Gloves,Lined leather gloves,women leather gloves lined,Add-on,True,38,58,11,Low,Apparel & Accessories > Clothing Accessories > Gloves & Mittens
+Scarves & Gloves,Tartan blanket scarf,women plaid blanket scarf,Add-on,True,28,48,9,Low,Apparel & Accessories > Clothing Accessories > Scarves & Shawls
+Scarves & Gloves,Equestrian-print square scarf,women square scarf equestrian print,Add-on,True,28,38,7,Low,Apparel & Accessories > Clothing Accessories > Scarves & Shawls
+Hats & Hair,Beret,women wool beret,Add-on,True,28,38,7,Low,Apparel & Accessories > Clothing Accessories > Hats
+Hats & Hair,Faux fur hat,women faux fur hat,Add-on,True,38,58,11,Low,Apparel & Accessories > Clothing Accessories > Hats
+Hats & Hair,Cable-knit beanie,women cable knit beanie,Add-on,True,28,38,7,Low,Apparel & Accessories > Clothing Accessories > Hats
+Hats & Hair,Faux fur earmuffs,women faux fur earmuffs,Add-on,True,28,38,7,Low,Apparel & Accessories > Clothing Accessories > Earmuffs
+Hats & Hair,Padded velvet headband,women padded velvet headband,Add-on,True,18,28,5,Low,Apparel & Accessories > Clothing Accessories > Hair Accessories
+Hats & Hair,Velvet hair bow,women velvet hair bow clip,Add-on,True,25,25,4,Low,Apparel & Accessories > Clothing Accessories > Hair Accessories
+Hats & Hair,Pearl hair clip,women pearl hair clip,Add-on,True,25,25,4,Low,Apparel & Accessories > Clothing Accessories > Hair Accessories
+Bags & Belts,Structured top-handle bag,women structured top handle bag,Core,True,88,128,24,Medium,"Apparel & Accessories > Handbags, Wallets & Cases > Handbags"
+Bags & Belts,Suede shoulder bag,women suede shoulder bag,Core,True,88,118,22,Medium,"Apparel & Accessories > Handbags, Wallets & Cases > Handbags"
+Bags & Belts,Saddle crossbody,women saddle crossbody bag,Core,True,68,98,19,Medium,"Apparel & Accessories > Handbags, Wallets & Cases > Handbags"
+Bags & Belts,Velvet evening clutch,women velvet clutch bag,Add-on,True,48,68,13,Medium,"Apparel & Accessories > Handbags, Wallets & Cases > Handbags"
+Bags & Belts,"Leather belt, gold buckle",women leather belt gold buckle,Add-on,True,28,48,9,Medium,Apparel & Accessories > Clothing Accessories > Belts
+Bags & Belts,Wide waist belt,women wide waist belt,Add-on,True,28,48,9,Medium,Apparel & Accessories > Clothing Accessories > Belts
+Jewelry,Pearl stud earrings,women pearl stud earrings,Add-on,True,18,28,5,Low,Apparel & Accessories > Jewelry > Earrings
+Jewelry,Chunky gold hoops,women chunky gold hoop earrings,Add-on,True,28,38,7,Low,Apparel & Accessories > Jewelry > Earrings
+Jewelry,Pearl drop earrings,women pearl drop earrings gold,Add-on,True,28,38,7,Low,Apparel & Accessories > Jewelry > Earrings
+Jewelry,Single-strand pearl necklace,women pearl necklace single strand,Add-on,True,28,48,9,Low,Apparel & Accessories > Jewelry > Necklaces
+Jewelry,Herringbone chain,women herringbone chain necklace gold,Add-on,True,28,48,9,Low,Apparel & Accessories > Jewelry > Necklaces
+Jewelry,Signet ring,women gold signet ring,Add-on,True,28,38,7,Low,Apparel & Accessories > Jewelry > Rings
+Boots & Shoes,Flat knee-high riding boots,women knee high riding boots flat,Hold,False,148,198,38,High,Apparel & Accessories > Shoes
+Boots & Shoes,Tall slim heeled boots,women knee high slim heel boots,Hold,False,148,198,38,High,Apparel & Accessories > Shoes
+Boots & Shoes,Lined Chelsea boots,women chelsea boots warm lined,Hold,False,108,148,28,High,Apparel & Accessories > Shoes
+Boots & Shoes,Lined suede ankle boots,women suede ankle boots fleece lined,Hold,False,108,148,28,High,Apparel & Accessories > Shoes
+Boots & Shoes,Waterproof lace-up boots,women waterproof lace up winter boots,Hold,False,118,158,30,High,Apparel & Accessories > Shoes
+Boots & Shoes,Penny loafers,women penny loafers,Hold,False,88,118,22,High,Apparel & Accessories > Shoes
+Boots & Shoes,Velvet flats,women velvet ballet flats,Hold,False,58,78,15,High,Apparel & Accessories > Shoes
