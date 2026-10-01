@@ -21,21 +21,22 @@ Most rows will say REVIEW, not APPROVED. The AliExpress API doesn't return photo
 ## One-time setup
 
 **1. AliExpress Open Platform** (official API; the spec forbids scraping the site because a ban would also stop DSers orders)
-- Sign in at https://openservice.aliexpress.com with your AliExpress account (the one linked to DSers). Register as a developer, create an app, and apply for the **Affiliate API** and **Dropshipping API**. Approval can take a few days.
-- Note the **App Key** and **App Secret**. Get a **tracking ID** at https://portals.aliexpress.com.
-- Authorize the app: open `https://api-sg.aliexpress.com/oauth/authorize?response_type=code&force_auth=true&client_id=APP_KEY&redirect_uri=YOUR_APP_CALLBACK_URL`, log in, then copy the `code=` value from the page you land on. In PowerShell, in this folder:
+- Sign in at https://openservice.aliexpress.com with your AliExpress account (the one linked to DSers) and register as a developer. In **App Console**, create one app with the type **Drop Shipping**. That single app covers search, product details and shipping quotes. (The Affiliate Portal isn't needed for this bot.)
+- In the app's settings, set **Callback URL** to `https://github.com`. It only needs to be a real page; the code you need appears in the address bar.
+- Copy the **App Key** and **App Secret** from App Management > Advanced Information.
+- Authorize the app: open `https://api-sg.aliexpress.com/oauth/authorize?response_type=code&force_auth=true&redirect_uri=https://github.com&client_id=YOUR_APP_KEY` and log in. You land on github.com with `?code=...` in the address bar. Copy that code, then quickly (it expires in minutes) run this in PowerShell, in this folder:
   ```powershell
-  $env:AE_APP_KEY="..."; $env:AE_APP_SECRET="..."; $env:AE_TRACKING_ID="..."
+  $env:AE_APP_KEY="..."; $env:AE_APP_SECRET="..."
   node src/aliexpress.js auth THE_CODE
   ```
-  This prints `access_token`. When it expires, repeat this step and update the secret.
+  This prints the `access_token` and its expiry date. When it expires, repeat this step and update the secret.
 - Check the field mapping once: `$env:AE_ACCESS_TOKEN="..."; node src/aliexpress.js probe "women camel coat"`. If a value prints as `null` but appears in `probe/*.json`, tell Claude Code which field it is.
 
 **2. Claude API key (optional, recommended)**: https://console.anthropic.com. This runs the premium-look photo check (spec 3.5). Without it, every product goes to REVIEW and you judge the photos yourself. To cut cost, set `vision_model: claude-haiku-4-5` in the config.
 
 **3. GitHub** (runs the bot while your laptop is off)
-- Create a free account and a **private** repository, then push this folder to it.
-- Go to Settings > Secrets and variables > Actions, and add: `AE_APP_KEY`, `AE_APP_SECRET`, `AE_TRACKING_ID`, `AE_ACCESS_TOKEN`, `ANTHROPIC_API_KEY`.
+- The code is in https://github.com/ybkjstrategies-commits/vourelle (keep it **private**).
+- Go to Settings > Secrets and variables > Actions > **New repository secret**, and add `AE_APP_KEY`, `AE_APP_SECRET`, `AE_ACCESS_TOKEN` and (optionally) `ANTHROPIC_API_KEY`.
 - Go to the Actions tab > Daily sourcing > **Run workflow** for a first test. After that it runs every day at 15:00 Singapore time. GitHub emails you if a run fails.
 
 **4. DSers**: double-click **Setup - DSers login.cmd**. It opens DSers' own login page. Your password goes only to DSers, and the session is saved encrypted on this laptop. Then, in DSers settings, turn price overwriting off (the bot owns prices) and turn stock sync on (spec 8.2).

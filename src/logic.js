@@ -129,7 +129,7 @@ export function evaluate(p, row, cfg) {
   // G-19 listing live
   if (p.statusType == null) unverified.push('LISTING_STATUS');
   else if (!/onselling/i.test(p.statusType)) reject.push('OFFLINE');
-  // G-06 orders (affiliate lastest_volume: recent sales, a lower bound on lifetime orders)
+  // G-06 orders (lifetime sales_count from product detail)
   if (p.orders == null) unverified.push('ORDERS');
   else if (p.orders < tier.min_orders) reject.push('LOW_ORDERS');
   // G-07 reviews and rating
@@ -199,8 +199,8 @@ export function evaluate(p, row, cfg) {
   // G-16 image count
   if ((p.images?.length ?? 0) < cfg.quality.min_images) reject.push('FEW_IMAGES');
 
-  // F-02 review/order mismatch. ponytail: only the 4.9+ half; "more reviews than orders" is meaningless
-  // while orders = recent sales. Add it back if a lifetime-orders field turns up.
+  // F-02 review/order mismatch. ponytail: only the 4.9+ half; sales_count is bucketed ("1000+"), so
+  // "more reviews than orders" would misfire. Add it back if an exact order count turns up.
   if (p.rating >= 4.9 && p.reviews != null && p.orders && p.reviews < 0.02 * p.orders) flags.push('F-02');
   // F-04 inflated original price
   if (p.originalPrice && p.salePrice && p.originalPrice > 3 * p.salePrice) flags.push('F-04');

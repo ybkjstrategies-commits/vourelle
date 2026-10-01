@@ -22,7 +22,6 @@ jobs:
         env:
           AE_APP_KEY: ${{ secrets.AE_APP_KEY }}
           AE_APP_SECRET: ${{ secrets.AE_APP_SECRET }}
-          AE_TRACKING_ID: ${{ secrets.AE_TRACKING_ID }}
           AE_ACCESS_TOKEN: ${{ secrets.AE_ACCESS_TOKEN }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       - name: Save workbook and state

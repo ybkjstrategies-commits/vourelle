@@ -1,7 +1,7 @@
 // AliExpress Open Platform client (spec 6.1, N-01: official APIs only, no page scraping).
-// Env: AE_APP_KEY, AE_APP_SECRET, AE_TRACKING_ID (affiliate search), AE_ACCESS_TOKEN (dropshipping calls).
-// Field names below follow the published SDKs. Before trusting them, run `node src/aliexpress.js probe "women camel coat"`
-// once with real keys and compare probe/*.json: any field that comes back empty is treated as UNVERIFIED, never as a pass.
+// One "Drop Shipping" app covers search, detail and freight. Env: AE_APP_KEY, AE_APP_SECRET, AE_ACCESS_TOKEN.
+// Field names follow the Open Platform docs (checked 2026-10-01). Confirm on live data with
+// `node src/aliexpress.js probe "women camel coat"`: any field that comes back empty is UNVERIFIED, never a pass.
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 
@@ -50,20 +50,20 @@ const num = (x) => {
 };
 const bool = (x) => (x == null ? null : x === true || x === 'true');
 
-// S1 discovery: keyword search, US, sorted by sales volume.
+// S1 discovery: keyword search, ship to US, most orders first.
 export async function search(keywords, page, pageSize) {
-  const r = await call('aliexpress.affiliate.product.query', {
-    keywords, page_no: page, page_size: pageSize, sort: 'LAST_VOLUME_DESC', target_currency: 'USD',
-    target_language: 'EN', ship_to_country: 'US', tracking_id: env('AE_TRACKING_ID'),
-  });
-  return arr(r?.resp_result?.result?.products).map((d) => ({
-    id: String(d.product_id),
-    title: d.product_title,
-    url: `https://www.aliexpress.com/item/${d.product_id}.html`,
-    salePrice: num(d.target_sale_price ?? d.sale_price),
-    originalPrice: num(d.target_original_price ?? d.original_price),
-    orders: num(d.lastest_volume),
-    image: d.product_main_image_url,
+  const res = await call('aliexpress.ds.text.search', {
+    keyWord: keywords, local: 'en_US', countryCode: 'US', currency: 'USD', sortBy: 'orders,desc', pageSize, pageIndex: page,
+  }, { token: env('AE_ACCESS_TOKEN') });
+  const r = res.aliexpress_ds_text_search ?? res;
+  if (r.code != null && !['0', '200'].includes(String(r.code))) throw new Error(`ds.text.search: ${r.code} ${r.msg ?? ''}`);
+  return arr(r.data?.products).map((d) => ({
+    id: String(d.itemId),
+    title: d.title,
+    url: `https://www.aliexpress.com/item/${d.itemId}.html`,
+    salePrice: num(d.targetSalePrice ?? d.salePrice),
+    originalPrice: num(d.targetOriginalPrice ?? d.originalPrice),
+    image: d.itemMainPic,
   }));
 }
 
@@ -89,11 +89,11 @@ export async function detail(disc) {
   });
   return {
     id: disc.id, url: disc.url, title: base.subject ?? disc.title,
-    orders: disc.orders, salePrice: disc.salePrice, originalPrice: disc.originalPrice,
+    orders: num(base.sales_count), salePrice: disc.salePrice, // lifetime sales; "1000+" reads as 1000 originalPrice: disc.originalPrice,
     rating: num(base.avg_evaluation_rating), reviews: num(base.evaluation_count), photoReviews: null,
     statusType: base.product_status_type ?? null,
     store: { id: store.store_id, name: store.store_name, dsr: dsr.some((v) => v == null) ? null : dsr, positive: null, ageYears: null },
-    processingDays: num(r.logistics_info_dto?.delivery_time),
+    processingDays: num((arr(r.logistics_info_dto)[0] ?? r.logistics_info_dto)?.delivery_time),
     brand: attr(/^brand/i) ?? '',
     composition: attr(/material|composition|fabric/i),
     attrsText: attrs.map(([k, v]) => `${k}: ${v}`).join('\n'),
@@ -109,11 +109,11 @@ export async function freight(productId, skuId, iso) {
     queryDeliveryReq: JSON.stringify({ quantity: 1, shipToCountry: iso, productId, selectedSkuId: skuId, language: 'en_US', currency: 'USD', locale: 'en_US' }),
   }, { token: env('AE_ACCESS_TOKEN') }))?.result;
   if (!r) return null;
-  if (r.success === false || r.success === 'false') return [];
+  if (r.success === false || r.success === 'false') return /NOT_AVAILABLE/i.test(r.msg ?? '') ? [] : null;
   return arr(r.delivery_options).map((o) => ({
     method: o.company ?? o.code,
-    // shipping_fee_format is "US $2.99"; the *_cent field's unit is unclear, so only trust it when it has decimals
-    cost: bool(o.free_shipping) ? 0 : num(o.shipping_fee_format) ?? (String(o.shipping_fee_cent ?? '').includes('.') ? num(o.shipping_fee_cent) : null),
+    // per the docs, shipping_fee_format is "US $2.99" and shipping_fee_cent is "2.99" despite its name
+    cost: bool(o.free_shipping) ? 0 : num(o.shipping_fee_format) ?? num(o.shipping_fee_cent),
     days: num(o.max_delivery_days),
     tracked: bool(o.tracking),
     from: o.ship_from_country ?? null,
@@ -123,8 +123,11 @@ export async function freight(productId, skuId, iso) {
 // One-time setup: exchange the ?code= from the AliExpress authorize page for an access token.
 async function auth(code) {
   const r = await call('/auth/token/create', { code });
-  console.log(JSON.stringify(r, null, 2));
-  console.log('\nSave access_token as the GitHub secret AE_ACCESS_TOKEN. It expires at expire_time; repeat this step then.');
+  const t = r.gopResponseBody ? JSON.parse(r.gopResponseBody) : r;
+  if (!t.access_token) return console.log('No token returned:', JSON.stringify(r, null, 2));
+  const when = (ms) => (ms ? new Date(+ms).toString() : 'unknown');
+  console.log(`access_token: ${t.access_token}\n\nAccess token expires:  ${when(t.expire_time)}\nRefresh token expires: ${when(t.refresh_token_valid_time)}`);
+  console.log('\nPaste the access_token into the GitHub secret AE_ACCESS_TOKEN. Repeat this step before it expires.');
 }
 
 if (import.meta.main) {

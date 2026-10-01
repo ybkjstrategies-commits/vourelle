@@ -145,7 +145,6 @@ async function main() {
     if (!rowOpen(row)) continue;
     const passers = [];
     const ceiling = itemPriceCeiling(row, cfg);
-    const tier = cfg.supplier_gates[row.role === 'Hero' ? 'hero' : row.role === 'Add-on' ? 'addon' : 'standard'];
     pages: for (let page = 1; page <= cfg.run.pages_per_keyword; page++) {
       let found;
       try { found = await ae.search(row.aliexpress_keywords, page, cfg.run.page_size); } catch (e) {
@@ -157,7 +156,7 @@ async function main() {
         if (pastDeadline()) break pages;
         run.scanned++;
         if (skip(d.id) || passers.some((p) => p.id === d.id)) continue;
-        if (d.salePrice == null || d.salePrice > ceiling || (d.orders ?? 0) < tier.min_orders) continue; // S2 pre-filter
+        if (d.salePrice == null || d.salePrice > ceiling) continue; // S2 pre-filter; orders are gated on lifetime sales after detail
         run.prefiltered++;
         const r = await checkSafely(d, row);
         if (SHOWN.includes(r.status)) passers.push(r); // stored by accept(), after the caps
