@@ -18,12 +18,19 @@ jobs:
         with: { node-version: 24, cache: npm }
       - run: npm ci
       - run: npm test
+      # DSers renews its login on every use and the old one stops working, so the newest copy is kept in
+      # GitHub's private Actions cache between runs (never in git). First run uses the DSERS_TOKEN_BOOTSTRAP secret.
+      - name: Restore DSers login
+        uses: actions/cache/restore@v4
+        with: { path: .dsers-token.json, key: dsers-token-${{ github.run_id }}, restore-keys: dsers-token- }
       - run: node src/run.js
         env:
-          AE_APP_KEY: ${{ secrets.AE_APP_KEY }}
-          AE_APP_SECRET: ${{ secrets.AE_APP_SECRET }}
-          AE_ACCESS_TOKEN: ${{ secrets.AE_ACCESS_TOKEN }}
+          DSERS_TOKEN_BOOTSTRAP: ${{ secrets.DSERS_TOKEN_BOOTSTRAP }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      - name: Keep DSers login for tomorrow
+        if: always() && hashFiles('.dsers-token.json') != ''
+        uses: actions/cache/save@v4
+        with: { path: .dsers-token.json, key: dsers-token-${{ github.run_id }} }
       - name: Save workbook and state
         if: always()
         run: |

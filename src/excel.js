@@ -9,7 +9,8 @@ const WHITE_BOLD = { bold: true, color: { argb: 'FFFFFFFF' } };
 const NAVY = 'FF1F2A44', IVORY = 'FFFAF7F0';
 
 // [group label, group colour, [column header, width, value fn, number format]]
-const GROUPS = (cat) => [
+const codesOf = (r) => [...(r.flags ?? []), ...(r.unverified ?? [])];
+const GROUPS = (cat, common) => [
   [cat, 'FF000000', [['#', 5, (r, i) => i + 1], ['Product Name', 45, (r) => r.title]]],
   ['Product', 'FF000000', [['Source', 12, () => 'Ali Express'], ['Listed Website', 55, (r) => ({ text: r.url, hyperlink: r.url })]]],
   ['Cost ($USD)', 'FFE03C31', [['Low (USD)', 11, (r) => r.priceLow, '$0.00'], ['High (USD)', 11, (r) => r.priceHigh, '$0.00']]],
@@ -26,13 +27,13 @@ const GROUPS = (cat) => [
     ['Premium look', 9, (r) => r.vision?.score ?? 'UNVERIFIED'], ['White-label', 11, (r) => r.whitelabel], ['Composition', 24, (r) => r.composition],
     ['Claims allowed', 30, (r) => r.claims && Object.entries(r.claims).map(([k, v]) => `${k}:${v ? 'yes' : 'no'}`).join(' ')],
     ['Google category', 30, (r) => r.googleCategory], ['Flags', 14, (r) => [...(r.flags ?? []), ...(r.unverified ?? [])].join(', ')],
-    ['What to check', 60, (r) => r.human], ['Decision', 11, () => null], ['Product ID', 18, (r) => r.id],
+    ['What to check', 60, (r) => codesOf(r).filter((c) => !common.has(c)).map((c) => CODES[c] ?? c).join('; ')], ['Decision', 11, () => null], ['Product ID', 18, (r) => r.id],
   ]],
 ];
 
-function categorySheet(wb, cat, rows) {
+function categorySheet(wb, cat, rows, common) {
   const ws = wb.addWorksheet(cat.slice(0, 31));
-  const groups = GROUPS(cat);
+  const groups = GROUPS(cat, common);
   let col = 1;
   for (const [label, colour, cols] of groups) {
     const end = col + cols.length - 1;
@@ -79,19 +80,22 @@ export async function writeWorkbook(file, { date, shown, rejected, run, cfg, cat
   const wb = new ExcelJS.Workbook();
   const counts = {};
   for (const r of [...shown, ...rejected.filter((r) => r.date === date)]) counts[r.status] = (counts[r.status] ?? 0) + 1;
+  // Checks every product shares (data the source never gives) are listed once here instead of on every row.
+  const common = new Set(shown.length ? codesOf(shown[0]).filter((c) => shown.every((r) => codesOf(r).includes(c))) : []);
   const readme = simpleSheet(wb, 'README', ['Item', 'Value'], [
     ['Run date', date], ['Finished', run.finishedAt ?? ''], ['Config version', cfg.version],
     ...Object.entries(counts).map(([s, n]) => [`${s} today`, n]),
-    ['Products scanned', run.scanned], ['Passed pre-filter', run.prefiltered], ['Fully checked', run.evaluated], ['API errors', run.errors], ['AliExpress API calls', run.apiCalls],
+    ['Products scanned', run.scanned], ['Passed pre-filter', run.prefiltered], ['Fully checked', run.evaluated], ['API errors', run.errors], ['Product data calls', run.apiCalls],
     ['How to import', 'In each category tab pick "approve" in the Decision column, save, close Excel, then double-click "Import approved to DSers".'],
-    ['Why most rows say REVIEW', 'The AliExpress API does not give photo-review counts or store age, so the spec treats those as unverified. The "What to check" column says what to look at.'],
+    ['Why rows say REVIEW', 'Some facts the spec needs are not in the product data, so the spec (N-02) treats them as unverified. Check these for every product, and the "What to check" column for anything extra:'],
+    ...[...common].map((c) => ['  Every product', CODES[c] ?? c]),
   ]);
   readme.getColumn(2).width = 90;
 
   const byCat = Object.groupBy(shown, (r) => r.category);
   for (const cat of categories) {
     const rows = (byCat[cat] ?? []).sort((a, b) => a.subcategory.localeCompare(b.subcategory) || b.score - a.score);
-    if (rows.length) categorySheet(wb, cat, rows);
+    if (rows.length) categorySheet(wb, cat, rows, common);
   }
 
   const gateRows = Object.entries(run.gates ?? {}).sort((a, b) => b[1] - a[1]).map(([code, n]) => [code, CODES[code] ?? '', n]);

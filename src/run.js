@@ -3,7 +3,7 @@
 // checked are skipped and the workbook is rebuilt from state. Flags: --dry-run (state is not saved).
 import fs from 'node:fs';
 import yaml from 'js-yaml';
-import * as ae from './aliexpress.js';
+import * as src from './dsers.js'; // product data source; ./aliexpress.js once there is an Open Platform app
 import { judge } from './vision.js';
 import { evaluate, itemPriceCeiling, applyCaps, humanCheck, COUNTRIES } from './logic.js';
 import { writeWorkbook } from './excel.js';
@@ -76,16 +76,11 @@ function save() {
 // Enrich + gate one discovered product. Cheap gates first; freight and vision only for survivors (spec S4-S5).
 async function check(disc, row) {
   const prev = state.products[disc.id];
-  const p = await ae.detail(disc);
+  const p = await src.detail(disc, disc.ship ?? {});
   if (prev) p.previous = { title: prev.title, mainImage: prev.mainImage };
-  let r = evaluate(p, row, cfg);
-  if (r.status !== 'REJECTED') {
-    const sku = r.listable.reduce((a, s) => (s.price > a.price ? s : a), r.listable[0]); // dearest SKU as the heaviest proxy
-    p.freight = Object.fromEntries(await Promise.all(COUNTRIES.map(async (c) => [c, await ae.freight(p.id, sku?.id, c)])));
-    r = evaluate(p, row, cfg);
-    for (const c of COUNTRIES) run.countries[c] = run.countries[c] ?? { pass: 0, fail: 0 };
-    for (const c of COUNTRIES) run.countries[c][r.reject.some((x) => x.endsWith(`_${c}`)) ? 'fail' : 'pass']++;
-  }
+  let r = evaluate(p, row, cfg); // shipping quotes arrive with the product, so shipping gates run here too
+  for (const c of COUNTRIES) run.countries[c] = run.countries[c] ?? { pass: 0, fail: 0 };
+  for (const c of COUNTRIES) run.countries[c][r.reject.some((x) => x.endsWith(`_${c}`)) ? 'fail' : 'pass']++;
   if (r.status !== 'REJECTED') {
     p.vision = prev?.vision ?? await judge(p, cfg); // reuse an earlier verdict: photos rarely change
     r = evaluate(p, row, cfg);
@@ -145,14 +140,25 @@ async function main() {
     if (!rowOpen(row)) continue;
     const passers = [];
     const ceiling = itemPriceCeiling(row, cfg);
+    // Search each country: the US list is the candidates, the UK and Canada lists give their shipping quotes.
+    const cursor = {}, quote = { US: {}, GB: {}, CA: {} };
     pages: for (let page = 1; page <= cfg.run.pages_per_keyword; page++) {
-      let found;
-      try { found = await ae.search(row.aliexpress_keywords, page, cfg.run.page_size); } catch (e) {
+      try {
+        for (const c of COUNTRIES) {
+          if (page > 1 && !cursor[c]) continue;
+          const res = await src.search(row.aliexpress_keywords, c, cfg.run.page_size, cursor[c]);
+          cursor[c] = res.next;
+          for (const i of res.items) quote[c][i.id] ??= { item: i, ship: i.shipCost };
+        }
+      } catch (e) {
         if (isSetupError(e)) throw e;
         run.errors++; console.warn(`search failed for ${row.subcategory}: ${e.message}`); break;
       }
+      const found = Object.values(quote.US).map((q) => q.item).filter((d) => !d.seen);
       if (!found.length) break;
       for (const d of found) {
+        d.seen = true;
+        d.ship = Object.fromEntries(COUNTRIES.map((c) => [c, quote[c][d.id]?.ship]));
         if (pastDeadline()) break pages;
         run.scanned++;
         if (skip(d.id) || passers.some((p) => p.id === d.id)) continue;
@@ -165,7 +171,7 @@ async function main() {
       }
     }
     accept(passers);
-    run.apiCalls = callsBefore + ae.stats.calls;
+    run.apiCalls = callsBefore + src.stats.calls;
     save();
     console.log(`${row.category} / ${row.subcategory}: ${passers.length} passed; ${counts().total}/${t.max_new_approved_per_day} today`);
   }
@@ -175,7 +181,7 @@ let failed = null;
 try { await main(); } catch (e) { failed = e; console.error(`Run stopped: ${e.message}`); }
 finally {
   run.finishedAt = new Date().toISOString();
-  run.apiCalls = callsBefore + ae.stats.calls;
+  run.apiCalls = callsBefore + src.stats.calls;
   save();
   const shown = shownToday().map((r) => (decisions[r.id]?.imported ? { ...r, status: 'IMPORTED' } : r));
   const rejected = all().filter((r) => r.status === 'REJECTED' && daysAgo(r.date) <= cfg.output.keep_rejected_days);

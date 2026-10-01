@@ -224,12 +224,16 @@ export function evaluate(p, row, cfg) {
       if (!tracked.length) { reject.push('SHIP_UNTRACKED'); continue; }
       const total = (m) => (m.days == null ? null : m.days + (p.processingDays ?? 0));
       const fast = tracked.filter((m) => total(m) != null && total(m) <= maxDays && m.cost != null);
-      if (!fast.length) {
+      // A quote with a cost but no delivery days (DSers data) still prices the product; days stay UNVERIFIED.
+      const undated = tracked.filter((m) => total(m) == null && m.cost != null);
+      if (!fast.length && undated.length) unverified.push(`DELIVERY_${c}`);
+      const pool = fast.length ? fast : undated;
+      if (!pool.length) {
         if (tracked.some((m) => total(m) == null || m.cost == null)) unverified.push(`FREIGHT_${c}`);
         else reject.push(`SHIP_SLOW_${c}`);
         continue;
       }
-      const best = fast.reduce((a, m) => (m.cost < a.cost ? m : a));
+      const best = pool.reduce((a, m) => (m.cost < a.cost ? m : a));
       out.ship[c] = { ...best, totalDays: total(best) };
       if (best.tracked == null) unverified.push(`TRACKING_${c}`);
       if (best.cost > maxCost + 1e-9) reject.push(`SHIP_COST_${c}`);
@@ -237,8 +241,9 @@ export function evaluate(p, row, cfg) {
     }
     const costs = Object.values(out.ship).map((s) => s.cost);
     if (costs.length > 1 && Math.max(...costs) - Math.min(...costs) > cfg.shipping.freight_outlier_usd) flags.push('F-11');
-    if (Object.keys(out.ship).length === COUNTRIES.length && out.priceHigh != null) {
-      out.pricing = priceProduct(out.priceHigh, Object.fromEntries(COUNTRIES.map((c) => [c, out.ship[c].cost])), row, cfg);
+    // A country with no quote (already UNVERIFIED above) is priced at the dearest known quote, so the price stays safe.
+    if (costs.length && out.priceHigh != null) {
+      out.pricing = priceProduct(out.priceHigh, Object.fromEntries(COUNTRIES.map((c) => [c, out.ship[c]?.cost ?? Math.max(...costs)])), row, cfg);
       if (out.pricing.overBand) reject.push('PRICE_OVER_BAND');
     }
   }
@@ -331,7 +336,8 @@ export const CODES = {
   STORE_DSR: 'Store ratings unreadable: check the store page', STORE_POSITIVE_FEEDBACK: 'Check store positive feedback is 95%+',
   STORE_AGE: 'Check the store has been open 1 year+', STOCK: 'Stock unreadable', FIBRE: 'No fabric composition listed: confirm it before writing copy',
   LISTING_STATUS: 'Listing status unreadable', PROCESSING_TIME: 'Processing time unknown: delivery days may be understated',
-  FREIGHT_US: 'US shipping unreadable', FREIGHT_GB: 'UK shipping unreadable', FREIGHT_CA: 'Canada shipping unreadable',
+  FREIGHT_US: 'No US shipping quote found: check the listing ships to the US', FREIGHT_GB: 'No UK shipping quote found: check the listing ships to the UK', FREIGHT_CA: 'No Canada shipping quote found: check the listing ships to Canada',
+  DELIVERY_US: 'Check US delivery is 9 days or less', DELIVERY_GB: 'Check UK delivery is 9 days or less', DELIVERY_CA: 'Check Canada delivery is 9 days or less',
   TRACKING_US: 'Check US method is tracked', TRACKING_GB: 'Check UK method is tracked', TRACKING_CA: 'Check Canada method is tracked',
   PREMIUM_LOOK: 'Vision check did not run: judge the photos yourself', WHITE_LABEL: 'Labels not visible in photos: confirm no branding (sample for Heroes)',
   ON_MODEL: 'Check there is an on-model photo',

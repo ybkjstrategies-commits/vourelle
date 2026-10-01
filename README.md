@@ -2,7 +2,7 @@
 
 Every day, in GitHub's cloud (your laptop can be off), the bot:
 
-1. searches AliExpress for every enabled row in `vourelle_taxonomy.csv`, Hero rows first;
+1. searches the AliExpress catalogue (through your DSers account) for every enabled row in `vourelle_taxonomy.csv`, Hero rows first;
 2. checks each product against the spec's gates, red flags, palette, blocklist and pricing formula (`docs/Vourelle_Sourcing_Bot_Spec.pdf`);
 3. stops at **50 products a day** (the count resets at 23:59 Singapore time), or at 18:30, whichever comes first;
 4. writes `output/vourelle_candidates_YYYY-MM-DD.xlsx`: one tab per category, in your sheet's layout.
@@ -12,34 +12,28 @@ It never imports anything by itself. You decide what goes to DSers.
 ## Your daily routine (about 2 minutes per product)
 
 1. From 19:00, double-click **Open today's picks.cmd**. Today's workbook opens.
-2. In each category tab, read the **What to check** column, open the link, and set **Decision** to `approve` or `reject`.
+2. The **README** tab lists the checks that apply to every product. In each category tab, open the link, do those checks plus anything in **What to check**, and set **Decision** to `approve` or `reject`.
 3. Save and close Excel, then double-click **Import approved to DSers.cmd**. Approved pieces go to the DSers Import List as drafts, at the bot's price, with off-palette colours removed.
 4. In DSers, review the drafts and push them to Shopify.
 
-Most rows will say REVIEW, not APPROVED. The AliExpress API doesn't return photo-review counts, store age or store positive feedback, and the spec (N-02) says an unknown value is never a pass. That's why **What to check** lists them.
+Every row will say REVIEW, not APPROVED. DSers' data has prices, colours, sizes, stock, ratings, photos and a shipping cost per country, but no delivery days, review counts, store age or fabric. The spec (N-02) says an unknown value is never a pass, so you check those by hand.
+
+## Where the product data comes from
+
+The bot reads the catalogue through DSers (the same data the DSers web app shows), using a DSers login you approve on DSers' own page. It does not scrape AliExpress (spec N-01). The official AliExpress Open Platform API (`src/aliexpress.js`, already built) gives fuller data, including delivery days, fabric and review counts, but it needs a registered business. To switch once you have one, change the import at the top of `src/run.js` and follow the "AliExpress Open Platform" steps in the git history of this README.
 
 ## One-time setup
 
-**1. AliExpress Open Platform** (official API; the spec forbids scraping the site because a ban would also stop DSers orders)
-- Sign in at https://openservice.aliexpress.com with your AliExpress account (the one linked to DSers) and register as a developer. In **App Console**, create one app with the type **Drop Shipping**. That single app covers search, product details and shipping quotes. (The Affiliate Portal isn't needed for this bot.)
-- In the app's settings, set **Callback URL** to `https://github.com`. It only needs to be a real page; the code you need appears in the address bar.
-- Copy the **App Key** and **App Secret** from App Management > Advanced Information.
-- Authorize the app: open `https://api-sg.aliexpress.com/oauth/authorize?response_type=code&force_auth=true&redirect_uri=https://github.com&client_id=YOUR_APP_KEY` and log in. You land on github.com with `?code=...` in the address bar. Copy that code, then quickly (it expires in minutes) run this in PowerShell, in this folder:
-  ```powershell
-  $env:AE_APP_KEY="..."; $env:AE_APP_SECRET="..."
-  node src/aliexpress.js auth THE_CODE
-  ```
-  This prints the `access_token` and its expiry date. When it expires, repeat this step and update the secret.
-- Check the field mapping once: `$env:AE_ACCESS_TOKEN="..."; node src/aliexpress.js probe "women camel coat"`. If a value prints as `null` but appears in `probe/*.json`, tell Claude Code which field it is.
+**1. DSers login for the cloud** (separate from the laptop's, because DSers replaces the login on every renewal)
+- In PowerShell, in this folder: `node src/dsers.js cloud-login`. Log in on the DSers page that opens and approve access.
+- It writes `dsers-cloud-login.txt`. On GitHub, go to Settings > Secrets and variables > Actions > **New repository secret**, name it `DSERS_TOKEN_BOOTSTRAP`, paste the file's whole content, then delete the file.
+- The cloud renews this login on every run and keeps the newest copy in GitHub's private Actions cache. If a run ever fails with "DSers session expired", repeat this step.
 
-**2. Claude API key (optional, recommended)**: https://console.anthropic.com. This runs the premium-look photo check (spec 3.5). Without it, every product goes to REVIEW and you judge the photos yourself. To cut cost, set `vision_model: claude-haiku-4-5` in the config.
+**2. DSers login for importing**: double-click **Setup - DSers login.cmd** and log in the same way. Then, in DSers settings, turn price overwriting off (the bot owns prices) and turn stock sync on (spec 8.2).
 
-**3. GitHub** (runs the bot while your laptop is off)
-- The code is in https://github.com/ybkjstrategies-commits/vourelle (keep it **private**).
-- Go to Settings > Secrets and variables > Actions > **New repository secret**, and add `AE_APP_KEY`, `AE_APP_SECRET`, `AE_ACCESS_TOKEN` and (optionally) `ANTHROPIC_API_KEY`.
-- Go to the Actions tab > Daily sourcing > **Run workflow** for a first test. After that it runs every day at 15:00 Singapore time. GitHub emails you if a run fails.
+**3. Claude API key (optional, recommended)**: https://console.anthropic.com. Add it as the secret `ANTHROPIC_API_KEY`. This runs the premium-look photo check (spec 3.5); without it you judge the photos yourself. To cut cost, set `vision_model: claude-haiku-4-5` in the config.
 
-**4. DSers**: double-click **Setup - DSers login.cmd**. It opens DSers' own login page. Your password goes only to DSers, and the session is saved encrypted on this laptop. Then, in DSers settings, turn price overwriting off (the bot owns prices) and turn stock sync on (spec 8.2).
+**4. First run**: Actions tab > Daily sourcing > **Run workflow**. After that it runs every day at 15:00 Singapore time, and GitHub emails you if a run fails. The code lives in https://github.com/ybkjstrategies-commits/vourelle (keep it **private**).
 
 ## Settings
 

@@ -3,3 +3,5 @@ My picks/
 probe/
 .env
 *.tmp
+.dsers-token.json
+dsers-cloud-login.txt
